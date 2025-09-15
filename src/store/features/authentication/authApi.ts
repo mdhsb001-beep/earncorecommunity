@@ -175,7 +175,6 @@ export const authApi = createApi({
       query: () => "users/checkUser",
       providesTags: ["User"],
       transformResponse: (response: { user: User }) => {
-        console.log("getCurrentUser API Response:", response);
         return response.user;
       },
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
@@ -190,6 +189,8 @@ export const authApi = createApi({
           const token = getCookie("accessToken");
           if (token && error.error?.status === 401) {
             dispatch(logout());
+            deleteCookie("accessToken");
+            deleteCookie("refreshToken");
           }
         }
       },

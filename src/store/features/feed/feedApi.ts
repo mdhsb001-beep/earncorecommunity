@@ -310,6 +310,36 @@ export const feedApi = createApi({
         "Post",
       ],
     }),
+
+    // User posts
+    getUserPosts: builder.query<{
+      docs: Post[];
+      totalDocs: number;
+      limit: number;
+      page: number;
+      totalPages: number;
+    }, { userId: string; page?: number; limit?: number }>({
+      query: ({ userId, page = 1, limit = 10 }) => ({
+        url: `posts/user/${userId}`,
+        params: { page, limit },
+      }),
+      transformResponse: (response: any) => response.data,
+      providesTags: (result, error, { userId }) => [
+        { type: "Post", id: `USER_${userId}` },
+        ...(result?.docs || []).map(({ _id }) => ({ type: "Post" as const, id: _id })),
+      ],
+    }),
+
+    // Update profile
+    updateProfile: builder.mutation<User, { fullName: string; bio: string; avatar: string }>({
+      query: (profileData) => ({
+        url: "users/profile",
+        method: "PATCH",
+        body: profileData,
+      }),
+      transformResponse: (response: any) => response.data,
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
@@ -335,4 +365,6 @@ export const {
   useAddCommentMutation,
   useUpdateCommentMutation,
   useDeleteCommentMutation,
+  useGetUserPostsQuery,
+  useUpdateProfileMutation,
 } = feedApi;

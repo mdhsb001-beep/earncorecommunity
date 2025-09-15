@@ -154,19 +154,6 @@ export function FeedFilters({
         </form>
 
         {/* Platform Filter */}
-        <Select value={currentPlatform || "all"} onValueChange={handlePlatformChange}>
-          <SelectTrigger className="w-full sm:w-40">
-            <SelectValue placeholder="All Platforms" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Platforms</SelectItem>
-            {platforms.map((platform) => (
-              <SelectItem key={platform.value} value={platform.value}>
-                {platform.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
 
         {/* Advanced Filters */}
         <Popover open={isFiltersOpen} onOpenChange={setIsFiltersOpen}>

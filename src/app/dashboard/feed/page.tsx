@@ -10,7 +10,6 @@ const FeedPage = async ({
   const filters = await searchParams;
   
   // Extract filter parameters
-  const platform = typeof filters.platform === 'string' ? filters.platform : undefined;
   const sortBy = typeof filters.sortBy === 'string' ? filters.sortBy : 'createdAt';
   const sortType = typeof filters.sortType === 'string' ? filters.sortType : 'desc';
   const search = typeof filters.search === 'string' ? filters.search : undefined;
@@ -31,7 +30,6 @@ const FeedPage = async ({
 
         <div className="mb-6">
           <FeedFilters 
-            currentPlatform={platform}
             currentSortBy={sortBy}
             currentSortType={sortType}
             currentSearch={search}
@@ -41,7 +39,6 @@ const FeedPage = async ({
         </div>
 
         <InfiniteFeed
-          platform={platform}
           sortBy={sortBy}
           sortType={sortType}
           search={search}

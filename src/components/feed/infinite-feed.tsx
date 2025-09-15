@@ -11,7 +11,6 @@ import { Post } from "@/store/features/feed/types";
 
 interface InfiniteFeedProps {
   community?: string;
-  platform?: string;
   sortBy?: string;
   sortType?: string;
   search?: string;
@@ -21,7 +20,6 @@ interface InfiniteFeedProps {
 
 export function InfiniteFeed({
   community,
-  platform,
   sortBy = "createdAt",
   sortType = "desc",
   search,
@@ -31,6 +29,7 @@ export function InfiniteFeed({
   const [page, setPage] = useState(1);
   const [allPosts, setAllPosts] = useState<Post[]>([]);
   const [hasMore, setHasMore] = useState(true);
+  const [showRefreshButton, setShowRefreshButton] = useState(false);
   const limit = 10;
 
   const { ref, inView } = useInView({
@@ -48,7 +47,6 @@ export function InfiniteFeed({
     cursor: page.toString(),
     limit,
     community,
-    platform,
     sortBy,
     sortType,
     search,
@@ -56,12 +54,22 @@ export function InfiniteFeed({
     authentic,
   });
 
+  // Show refresh button every 5 minutes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShowRefreshButton(true);
+    }, 5 * 60 * 1000); // 5 minutes
+
+    return () => clearInterval(interval);
+  }, []);
+
   // Reset when filters change
   useEffect(() => {
     setPage(1);
     setAllPosts([]);
     setHasMore(true);
-  }, [community, platform, sortBy, sortType, search, minQualityScore, authentic]);
+    setShowRefreshButton(false);
+  }, [community, sortBy, sortType, search, minQualityScore, authentic]);
 
   // Handle new data
   useEffect(() => {
@@ -97,6 +105,15 @@ export function InfiniteFeed({
     refetch();
   }, [refetch]);
 
+  const handleRefreshFeed = useCallback(() => {
+    setPage(1);
+    setAllPosts([]);
+    setHasMore(true);
+    setShowRefreshButton(false);
+    refetch();
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [refetch]);
   // Initial loading state
   if (isLoading && page === 1) {
     return (
@@ -147,6 +164,20 @@ export function InfiniteFeed({
 
   return (
     <div className="space-y-6">
+      {/* Refresh Button */}
+      {showRefreshButton && (
+        <div className="sticky top-4 z-10 flex justify-center">
+          <Button 
+            onClick={handleRefreshFeed}
+            className="shadow-lg"
+            size="sm"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Load New Posts
+          </Button>
+        </div>
+      )}
+
       {allPosts.map((post) => (
         <PostCard key={post._id} post={post} />
       ))}

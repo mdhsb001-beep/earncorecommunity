@@ -158,7 +158,7 @@ export function PostCard({ post }: PostCardProps) {
         <div className="flex items-center justify-between p-4 pb-4">
           <button
             onClick={handleProfileClick}
-            className="flex items-center space-x-3 hover:bg-accent/50 rounded-lg p-2 -m-2 transition-colors duration-200"
+            className="flex items-center space-x-3 hover:bg-accent/50 rounded-lg p-2 -m-2 transition-colors duration-200 cursor-pointer"
           >
             <Avatar className="h-10 w-10">
               <AvatarImage
@@ -176,11 +176,6 @@ export function PostCard({ post }: PostCardProps) {
                 {post?.owner?.isVerified && (
                   <BadgeCheck className="h-4 w-4 text-primary" />
                 )}
-                {post?.community && (
-                  <Badge variant="secondary" className="text-xs">
-                    {post.community.name}
-                  </Badge>
-                )}
               </div>
               <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <span>@{post?.owner?.username}</span>
@@ -190,12 +185,6 @@ export function PostCard({ post }: PostCardProps) {
                     addSuffix: true,
                   })}
                 </span>
-                {post.platform && (
-                  <>
-                    <span>•</span>
-                    <span className="capitalize">{post.platform}</span>
-                  </>
-                )}
               </div>
             </div>
           </button>
@@ -252,14 +241,6 @@ export function PostCard({ post }: PostCardProps) {
                   <Share2 className="h-4 w-4 mr-2" />
                   Share
                 </DropdownMenuItem>
-                {post.sourceUrl && (
-                  <DropdownMenuItem asChild>
-                    <a href={post.sourceUrl} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      View Original
-                    </a>
-                  </DropdownMenuItem>
-                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

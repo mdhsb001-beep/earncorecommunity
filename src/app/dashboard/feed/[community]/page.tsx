@@ -25,7 +25,6 @@ const CommunityFeedPage = async ({
   const communityName = community.replace(/-/g, ' ');
   
   // Extract filter parameters
-  const platform = typeof filters.platform === 'string' ? filters.platform : undefined;
   const sortBy = typeof filters.sortBy === 'string' ? filters.sortBy : 'createdAt';
   const sortType = typeof filters.sortType === 'string' ? filters.sortType : 'desc';
   const search = typeof filters.search === 'string' ? filters.search : undefined;
@@ -58,7 +57,6 @@ const CommunityFeedPage = async ({
         <div className="mb-6">
           <FeedFilters 
             currentCommunity={community}
-            currentPlatform={platform}
             currentSortBy={sortBy}
             currentSortType={sortType}
             currentSearch={search}
@@ -69,7 +67,6 @@ const CommunityFeedPage = async ({
 
         <InfiniteFeed
           community={communityName}
-          platform={platform}
           sortBy={sortBy}
           sortType={sortType}
           search={search}
