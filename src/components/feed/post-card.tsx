@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { formatDistanceToNow } from "date-fns";
 import {
   Heart,
@@ -31,6 +31,7 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "../ui/skeleton";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { AuthPopup } from "@/components/auth-popup";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,8 +49,11 @@ export function PostCard({ post }: PostCardProps) {
   const [isContentDialogOpen, setIsContentDialogOpen] = useState(false);
   const [isLiked, setIsLiked] = useState(post.isLoved);
   const [likesCount, setLikesCount] = useState(post.engagementMetrics?.likes || 0);
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
+  const [authAction, setAuthAction] = useState<"like" | "bookmark" | "comment">("like");
   
   const currentUser = useSelector((state: RootState) => state.auth.user);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const isOwnPost = currentUser?._id === post.owner._id;
 
   const [toggleLove, { isLoading: isLikeLoading }] = useTogglePostLikeMutation();
@@ -64,7 +68,13 @@ export function PostCard({ post }: PostCardProps) {
   // Check bookmark status
   const { data: bookmarkStatus } = useCheckBookmarkStatusQuery(post._id);
 
-  const handleLoveClick = async () => {
+  const handleLoveClick = useCallback(async () => {
+    if (!isAuthenticated) {
+      setAuthAction("like");
+      setShowAuthPopup(true);
+      return;
+    }
+
     if (isLikeLoading) return;
     
     try {
@@ -74,9 +84,15 @@ export function PostCard({ post }: PostCardProps) {
     } catch (error) {
       console.error("Failed to toggle like:", error);
     }
-  };
+  }, [isAuthenticated, isLikeLoading, toggleLove, post._id]);
 
-  const handleBookmarkClick = async () => {
+  const handleBookmarkClick = useCallback(async () => {
+    if (!isAuthenticated) {
+      setAuthAction("bookmark");
+      setShowAuthPopup(true);
+      return;
+    }
+
     if (isBookmarkLoading) return;
     
     try {
@@ -84,7 +100,7 @@ export function PostCard({ post }: PostCardProps) {
     } catch (error) {
       console.error("Failed to toggle bookmark:", error);
     }
-  };
+  }, [isAuthenticated, isBookmarkLoading, toggleBookmark, post._id]);
 
   const handleFollowClick = async () => {
     if (isFollowLoading || isOwnPost) return;
@@ -100,9 +116,15 @@ export function PostCard({ post }: PostCardProps) {
     setIsProfileDialogOpen(true);
   };
 
-  const handleCommentsClick = () => {
+  const handleCommentsClick = useCallback(() => {
+    if (!isAuthenticated) {
+      setAuthAction("comment");
+      setShowAuthPopup(true);
+      return;
+    }
+
     setIsCommentsDrawerOpen(true);
-  };
+  }, [isAuthenticated]);
 
   const handleContentClick = () => {
     setIsContentDialogOpen(true);
@@ -373,6 +395,12 @@ export function PostCard({ post }: PostCardProps) {
         post={post}
         open={isContentDialogOpen}
         onOpenChange={setIsContentDialogOpen}
+      />
+
+      <AuthPopup
+        isOpen={showAuthPopup}
+        onClose={() => setShowAuthPopup(false)}
+        action={authAction}
       />
     </>
   );

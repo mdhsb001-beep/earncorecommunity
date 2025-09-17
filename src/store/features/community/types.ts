@@ -1,3 +1,5 @@
+import { Post } from "../feed/types";
+
 export interface CommunityTypes {
   _id: string;
   name: string;
@@ -21,4 +23,10 @@ export interface CommunityTypes {
   };
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface CommunityWithPosts extends CommunityTypes {
+  posts: Post[];
+  totalPosts: number;
+  isJoined?: boolean;
 }

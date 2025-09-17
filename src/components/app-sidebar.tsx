@@ -57,6 +57,7 @@ const makeLink = (href: string) => href.toLowerCase().replaceAll(" ", "-");
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: communities = [] } = useGetAllCommunitiesQuery();
+  
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -101,7 +102,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                   alt="logo"
                                 ></img>
                               )}
-                              {item?.name}
+                              <span className="flex-1">{item?.name}</span>
+                              {item?.memberCount && (
+                                <span className="text-xs text-muted-foreground">
+                                  {item.memberCount > 1000 
+                                    ? `${Math.round(item.memberCount / 1000)}k` 
+                                    : item.memberCount
+                                  }
+                                </span>
+                              )}
                             </div>
                           </Link>
                         </SidebarMenuButton>

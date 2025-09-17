@@ -1,6 +1,5 @@
-import { InfiniteFeed } from "@/components/feed/infinite-feed";
+import { CommunityFeed } from "@/components/feed/community-feed";
 import { CommunityHeader } from "@/components/feed/community-header";
-import { FeedFilters } from "@/components/feed/feed-filters";
 import React from "react";
 import {
   Breadcrumb,
@@ -54,24 +53,9 @@ const CommunityFeedPage = async ({
       <div className="max-w-4xl mx-auto py-8 px-4">
         <CommunityHeader communitySlug={community} />
         
-        <div className="mb-6">
-          <FeedFilters 
-            currentCommunity={community}
-            currentSortBy={sortBy}
-            currentSortType={sortType}
-            currentSearch={search}
-            currentMinQualityScore={minQualityScore}
-            currentAuthentic={authentic}
-          />
-        </div>
-
-        <InfiniteFeed
-          community={communityName}
-          sortBy={sortBy}
-          sortType={sortType}
-          search={search}
-          minQualityScore={minQualityScore}
-          authentic={authentic}
+        <CommunityFeed
+          communitySlug={community}
+          initialSearch={search}
         />
       </div>
     </div>

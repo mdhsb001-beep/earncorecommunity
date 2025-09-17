@@ -23,6 +23,9 @@ import {
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
 import { Comment } from "@/store/features/feed/types";
+import { AuthPopup } from "@/components/auth-popup";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -261,8 +264,11 @@ export function CommentsDrawer({
 }: CommentsDrawerProps) {
   const [newComment, setNewComment] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
   const [page, setPage] = useState(1);
   const limit = 10;
+
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const { data: comments, isLoading } = useGetPostCommentsQuery(
     { postId, page, limit },
@@ -272,6 +278,11 @@ export function CommentsDrawer({
   const [addComment, { isLoading: isAddingComment }] = useAddCommentMutation();
 
   const handleSubmitComment = async () => {
+    if (!isAuthenticated) {
+      setShowAuthPopup(true);
+      return;
+    }
+
     if (!newComment.trim()) return;
 
     try {
@@ -393,6 +404,12 @@ export function CommentsDrawer({
           </div>
         </div>
       </DrawerContent>
+
+      <AuthPopup
+        isOpen={showAuthPopup}
+        onClose={() => setShowAuthPopup(false)}
+        action="comment"
+      />
     </Drawer>
   );
 }
